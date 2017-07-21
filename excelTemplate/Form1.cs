@@ -102,10 +102,7 @@ namespace excelTemplate
                 MessageBox.Show("ไม่พบข้อมูล");
             }
 
-            else
-            {
 
-            }
         }
     }
 }
