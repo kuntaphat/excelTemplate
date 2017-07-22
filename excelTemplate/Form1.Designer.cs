@@ -94,6 +94,7 @@
             this.lbIDCard = new System.Windows.Forms.Label();
             this.lbRegisID = new System.Windows.Forms.Label();
             this.tbRegisID = new System.Windows.Forms.TextBox();
+            this.pgAllContact = new System.Windows.Forms.ProgressBar();
             this.mainPanel.SuspendLayout();
             this.resultPanel.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -102,6 +103,7 @@
             // 
             // mainPanel
             // 
+            this.mainPanel.Controls.Add(this.pgAllContact);
             this.mainPanel.Controls.Add(this.tbBrowseTemplate);
             this.mainPanel.Controls.Add(this.btAllContact);
             this.mainPanel.Controls.Add(this.tbBrowseExcel);
@@ -136,6 +138,7 @@
             this.btAllContact.TabIndex = 21;
             this.btAllContact.Text = "สร้างสัญญาอัตโนมัติ";
             this.btAllContact.UseVisualStyleBackColor = true;
+            this.btAllContact.Click += new System.EventHandler(this.btAllContact_Click);
             // 
             // tbBrowseExcel
             // 
@@ -150,7 +153,7 @@
             // 
             this.lbAllContact.AutoSize = true;
             this.lbAllContact.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(222)));
-            this.lbAllContact.Location = new System.Drawing.Point(523, 117);
+            this.lbAllContact.Location = new System.Drawing.Point(523, 108);
             this.lbAllContact.Name = "lbAllContact";
             this.lbAllContact.Size = new System.Drawing.Size(98, 16);
             this.lbAllContact.TabIndex = 20;
@@ -703,6 +706,13 @@
             this.tbRegisID.Size = new System.Drawing.Size(89, 20);
             this.tbRegisID.TabIndex = 0;
             // 
+            // pgAllContact
+            // 
+            this.pgAllContact.Location = new System.Drawing.Point(526, 127);
+            this.pgAllContact.Name = "pgAllContact";
+            this.pgAllContact.Size = new System.Drawing.Size(95, 10);
+            this.pgAllContact.TabIndex = 22;
+            // 
             // mainForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -793,6 +803,7 @@
         private System.Windows.Forms.TextBox tbSurname;
         private System.Windows.Forms.Label lbPosition;
         private System.Windows.Forms.Label lbSurname;
+        private System.Windows.Forms.ProgressBar pgAllContact;
     }
 }
 

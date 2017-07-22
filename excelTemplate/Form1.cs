@@ -1,18 +1,10 @@
 ﻿using Novacode;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Globalization;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Excel = Microsoft.Office.Interop.Excel;
-using Word = Microsoft.Office.Interop.Word;
 
 namespace excelTemplate
 {
@@ -22,6 +14,9 @@ namespace excelTemplate
         {
             InitializeComponent();
 
+            resultPanel.Enabled = false;
+            btSearchID.Enabled = false;
+            btAllContact.Enabled = false;
         }
 
         CultureInfo ThaiCulture = new CultureInfo("th-TH");
@@ -67,7 +62,7 @@ namespace excelTemplate
 
                             //double date = double.Parse(dateTime);
 
-                            var conv = dateTime.ToString("dd MMMM yyyy", ThaiCulture);
+                            var conv = dateTime.ToString("d MMMM yyyy", ThaiCulture);
 
                             subData.Add(conv);
                         }
@@ -88,6 +83,13 @@ namespace excelTemplate
                 Marshal.ReleaseComObject(xlWorkSheet);
                 Marshal.ReleaseComObject(xlWorkBook);
                 Marshal.ReleaseComObject(xlApp);
+
+                if(tbBrowseTemplate.Text != "")
+                {
+                    //resultPanel.Enabled = true;
+                    btSearchID.Enabled = true;
+                    btAllContact.Enabled = true;
+                }
 
             }
         }
@@ -110,10 +112,14 @@ namespace excelTemplate
             if(searchIndex == excelData.Count + 1)
             {
                 MessageBox.Show("ไม่พบข้อมูล");
+                clearResult();
+                resultPanel.Enabled = false;
             }
 
             else
             {
+                resultPanel.Enabled = true;
+
                 tbRegisID.Text = excelData[searchIndex][1];
                 tbIDCard.Text = excelData[searchIndex][2];
                 tbNameTitle.Text = excelData[searchIndex][3];
@@ -218,9 +224,19 @@ namespace excelTemplate
 
                 string[] address1 = tbAddress.Text.Split(new[] { "หมู่ที่" }, StringSplitOptions.None);     //บ้านเลขที่
                 string[] address2 = address1[1].Split(new[] { "ตรอก/ซอย" }, StringSplitOptions.None);    //หมู่ที่
-                string[] address3 = address2[1].Split(new[] { "ถนน" }, StringSplitOptions.None);        //ซอย, ถนน
 
+                string[] address3;
 
+                if (address2.Length != 1)
+                {
+                    address3 = address2[1].Split(new[] { "ถนน" }, StringSplitOptions.None);        //ซอย, ถนน
+                }
+
+                else
+                {
+                    address3 =  new string[]{ "-", "-" };
+                }
+                
                 document.ReplaceText("emHomeNo", address1[0]);
                 document.ReplaceText("emVillageNo", address2[0]);
                 document.ReplaceText("emSoi", address3[0]);
@@ -251,7 +267,7 @@ namespace excelTemplate
 
                 MessageBox.Show("สร้างสัญญาเสร็จเรียบร้อย");
 
-                document.
+                
             }            
 
         }
@@ -266,6 +282,123 @@ namespace excelTemplate
             if (browseTemplate.ShowDialog() == DialogResult.OK)
             {
                 tbBrowseTemplate.Text = browseTemplate.FileName.ToString();
+
+                if(tbBrowseExcel.Text != "")
+                {
+                    //resultPanel.Enabled = true;
+                    btSearchID.Enabled = true;
+                    btAllContact.Enabled = true;
+                }
+            }
+        }
+
+        private void btAllContact_Click(object sender, EventArgs e)
+        {
+            string folderPath = "";
+            FolderBrowserDialog browseAllContact = new FolderBrowserDialog();
+
+            if (browseAllContact.ShowDialog() == DialogResult.OK)
+            {
+                folderPath = browseAllContact.SelectedPath;
+
+                for(int i=0; i<excelData.Count; i++)
+                {
+                    for (int j = 0; j < excelData[i].Count; j++)
+                    {
+                        if(excelData[i][j] == null)
+                        {
+                            excelData[i][j] = "";
+                        }
+                    }
+                        
+                }
+
+                pgAllContact.Minimum = 0;
+                pgAllContact.Maximum = excelData.Count;
+                pgAllContact.Step = 1;
+
+                for (int i=0; i<excelData.Count; i++)
+                {
+                    DocX document = DocX.Load(tbBrowseTemplate.Text);
+
+                    document.ReplaceText("work", "การไฟฟ้าฝ่ายผลิตแห่งประเทศไทย");
+
+                    string[] startWork = excelData[i][16].ToString().Split(' ');
+
+                    document.ReplaceText("startDate", startWork[0]);
+                    document.ReplaceText("startMonth", startWork[1]);
+                    document.ReplaceText("startYear", startWork[2]);
+
+                    document.ReplaceText("bossName", excelData[i][19].ToString());
+                    document.ReplaceText("bossPos", excelData[i][21].ToString());
+
+                    document.ReplaceText("emTitle", excelData[i][3].ToString());
+                    document.ReplaceText("emName", excelData[i][4].ToString());
+                    document.ReplaceText("emSurname", excelData[i][5].ToString());
+
+                    DateTime now = DateTime.Today;
+
+                    DateTime birthDate = Convert.ToDateTime(excelData[i][27]).AddYears(-543);
+
+                    int birthyear = Convert.ToInt32(birthDate.ToString("yyyy"));
+
+                    int age = now.Year - birthyear;
+
+                    if (now < birthDate.AddYears(age)) age--;
+
+                    document.ReplaceText("emAge", age.ToString());
+
+                    string[] address1 = excelData[i][7].ToString().Split(new[] { "หมู่ที่" }, StringSplitOptions.None);     //บ้านเลขที่
+                    string[] address2 = address1[1].Split(new[] { "ตรอก/ซอย" }, StringSplitOptions.None);    //หมู่ที่
+
+                    string[] address3;
+
+                    if (address2.Length != 1)
+                    {
+                        address3 = address2[1].Split(new[] { "ถนน" }, StringSplitOptions.None);        //ซอย, ถนน
+                    }
+
+                    else
+                    {
+                        address3 = new string[] { "-", "-" };
+                    }
+
+                    document.ReplaceText("emHomeNo", address1[0]);
+                    document.ReplaceText("emVillageNo", address2[0]);
+                    document.ReplaceText("emSoi", address3[0]);
+                    document.ReplaceText("emStreet", address3[1]);
+                    document.ReplaceText("em2Address", excelData[i][8].ToString());
+                    document.ReplaceText("em3Address", excelData[i][9].ToString());
+                    document.ReplaceText("emProvince", excelData[i][10].ToString());
+                    document.ReplaceText("emZipCode", excelData[i][11].ToString());
+
+                    document.ReplaceText("emTel", excelData[i][12].ToString());
+                    document.ReplaceText("emPos", excelData[i][6].ToString());
+                    document.ReplaceText("emNo", excelData[i][17].ToString());
+                    document.ReplaceText("emDepartment", excelData[i][13].ToString());
+                    document.ReplaceText("emWorkCode", excelData[i][15].ToString());
+
+                    document.ReplaceText("bossSign", excelData[i][19].ToString());
+                    document.ReplaceText("bossPos", excelData[i][21].ToString());
+
+                    document.ReplaceText("emX", excelData[i][3].ToString());
+                    document.ReplaceText("emY", excelData[i][4].ToString());
+                    document.ReplaceText("emZ", excelData[i][5].ToString());
+
+                    document.ReplaceText("witness1", excelData[i][24].ToString());
+                    document.ReplaceText("witness2", excelData[i][25].ToString());
+                    document.ReplaceText("wit2Sign", excelData[i][26].ToString());
+
+                    System.IO.Directory.CreateDirectory(folderPath + "\\" + "สัญญา " + DateTime.Now.ToShortDateString());
+
+                    string saveFileName = folderPath + "\\" + "สัญญา " + DateTime.Now.ToShortDateString() + "\\" + excelData[i][1].ToString() + " " + excelData[i][4].ToString() + ".docx";
+
+                    document.SaveAs(saveFileName);
+
+                    pgAllContact.PerformStep();
+                }
+
+                MessageBox.Show("สร้างสัญญาทั้งหมดเสร็จเรียบร้อย");
             }
         }
     }
