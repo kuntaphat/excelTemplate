@@ -42,7 +42,7 @@
             this.btSearchID = new System.Windows.Forms.Button();
             this.btBrowseTemplate = new System.Windows.Forms.Button();
             this.resultPanel = new System.Windows.Forms.GroupBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.btCreateContact = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.tbEmPosition = new System.Windows.Forms.TextBox();
             this.tbEmName = new System.Windows.Forms.TextBox();
@@ -225,7 +225,7 @@
             // 
             // resultPanel
             // 
-            this.resultPanel.Controls.Add(this.button1);
+            this.resultPanel.Controls.Add(this.btCreateContact);
             this.resultPanel.Controls.Add(this.groupBox2);
             this.resultPanel.Controls.Add(this.groupBox1);
             this.resultPanel.Controls.Add(this.tbStartDate);
@@ -268,14 +268,15 @@
             this.resultPanel.TabStop = false;
             this.resultPanel.Text = "ผลลัพธ์การค้นหา";
             // 
-            // button1
+            // btCreateContact
             // 
-            this.button1.Location = new System.Drawing.Point(627, 362);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(126, 23);
-            this.button1.TabIndex = 22;
-            this.button1.Text = "สร้างสัญญา";
-            this.button1.UseVisualStyleBackColor = true;
+            this.btCreateContact.Location = new System.Drawing.Point(627, 362);
+            this.btCreateContact.Name = "btCreateContact";
+            this.btCreateContact.Size = new System.Drawing.Size(126, 23);
+            this.btCreateContact.TabIndex = 22;
+            this.btCreateContact.Text = "สร้างสัญญา";
+            this.btCreateContact.UseVisualStyleBackColor = true;
+            this.btCreateContact.Click += new System.EventHandler(this.btCreateContact_Click);
             // 
             // groupBox2
             // 
@@ -746,7 +747,7 @@
         private System.Windows.Forms.Label lbIDCard;
         private System.Windows.Forms.Label lbRegisID;
         private System.Windows.Forms.TextBox tbRegisID;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btCreateContact;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.TextBox tbEmPosition;
         private System.Windows.Forms.TextBox tbEmName;
