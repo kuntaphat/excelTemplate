@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Excel = Microsoft.Office.Interop.Excel;
@@ -48,7 +49,17 @@ namespace excelTemplate
                 int excelRow = range.Rows.Count;
                 int excelCol = range.Columns.Count;
 
-                int lastRow = xlWorkSheet.Cells[excelRow, 1].End(Excel.XlDirection.xlUp).Row;                
+                //int lastRow = xlWorkSheet.Cells[excelRow, 1].End(Excel.XlDirection.xlUp).Row;
+
+                object misValue = Missing.Value;
+
+                int lastRow = 0;
+                Excel.Range count;
+                count = xlWorkSheet.UsedRange.Columns[1, misValue] as Excel.Range;
+                foreach (Excel.Range cell in count.Cells)
+                {
+                    lastRow += 1;
+                }
 
                 for (int i=4; i<=lastRow; i++) // Start index at 4th row
                 {
@@ -222,21 +233,33 @@ namespace excelTemplate
                 document.ReplaceText("emSurname", tbSurname.Text);
                 document.ReplaceText("emAge", tbAge.Text);
 
-                string[] address1 = tbAddress.Text.Split(new[] { "หมู่ที่" }, StringSplitOptions.None);     //บ้านเลขที่
-                string[] address2 = address1[1].Split(new[] { "ตรอก/ซอย" }, StringSplitOptions.None);    //หมู่ที่
+                string[] address1 = tbAddress.Text.Split(new[] { "หมู่" }, StringSplitOptions.None);     //บ้านเลขที่
 
-                string[] address3;
-
-                if (address2.Length != 1)
+                if (address1.Length == 1)
                 {
-                    address3 = address2[1].Split(new[] { "ถนน" }, StringSplitOptions.None);        //ซอย, ถนน
+                    address1 = new string[] { "-" };
+                }
+
+                string[] address2;
+
+                if (address1.Length != 1)
+                {
+                    address2 = address1[1].Split(new[] { "ตรอก/ซอย" }, StringSplitOptions.None);    //หมู่ที่
                 }
 
                 else
                 {
-                    address3 =  new string[]{ "-", "-" };
+                    address2 = new string[] { "-", "-" };
                 }
-                
+
+                string[] address3 = address2[1].Split(new[] { "ถนน" }, StringSplitOptions.None);        //ซอย, ถนน
+
+                if (address3.Length == 1)
+                {
+                    Array.Resize(ref address3, 2);
+                    address3[1] = "-";
+                }
+
                 document.ReplaceText("emHomeNo", address1[0]);
                 document.ReplaceText("emVillageNo", address2[0]);
                 document.ReplaceText("emSoi", address3[0]);
@@ -348,19 +371,31 @@ namespace excelTemplate
 
                     document.ReplaceText("emAge", age.ToString());
 
-                    string[] address1 = excelData[i][7].ToString().Split(new[] { "หมู่ที่" }, StringSplitOptions.None);     //บ้านเลขที่
-                    string[] address2 = address1[1].Split(new[] { "ตรอก/ซอย" }, StringSplitOptions.None);    //หมู่ที่
+                    string[] address1 = excelData[i][7].ToString().Split(new[] { "หมู่" }, StringSplitOptions.None);     //บ้านเลขที่
 
-                    string[] address3;
-
-                    if (address2.Length != 1)
+                    if(address1.Length == 1)
                     {
-                        address3 = address2[1].Split(new[] { "ถนน" }, StringSplitOptions.None);        //ซอย, ถนน
+                        address1 = new string[] { "-" };
+                    }
+
+                    string[] address2;
+
+                    if (address1.Length != 1)
+                    {
+                        address2 = address1[1].Split(new[] { "ตรอก/ซอย" }, StringSplitOptions.None);    //หมู่ที่
                     }
 
                     else
                     {
-                        address3 = new string[] { "-", "-" };
+                        address2 = new string[] { "-", "-" };
+                    }
+
+                    string[] address3 = address2[1].Split(new[] { "ถนน" }, StringSplitOptions.None);        //ซอย, ถนน
+
+                    if (address3.Length == 1)
+                    {
+                        Array.Resize(ref address3, 2);
+                        address3[1] = "-";
                     }
 
                     document.ReplaceText("emHomeNo", address1[0]);
