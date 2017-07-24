@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Excel = Microsoft.Office.Interop.Excel;
@@ -43,29 +42,24 @@ namespace excelTemplate
                 Excel.Workbook xlWorkBook = xlApp.Workbooks.Open(tbBrowseExcel.Text, 0, true, 5, "", "", true, Microsoft.Office.Interop.Excel.XlPlatform.xlWindows, "\t", false, false, 0, true, 1, 0);
                 Excel.Worksheet xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(1);               
 
-                Excel.Range range = xlWorkSheet.UsedRange;
-                //Excel.Range range = xlWorkSheet.get_Range("A1", last);
+                var lastRow = xlWorkSheet.Cells.Find(
+                                        What: "*",
+                                        SearchOrder: Excel.XlSearchOrder.xlByRows,
+                                        SearchDirection: Excel.XlSearchDirection.xlPrevious,
+                                        MatchCase: false).Row;
 
-                int excelRow = range.Rows.Count;
-                int excelCol = range.Columns.Count;
+                var lastCol = xlWorkSheet.Cells.Find(
+                                        What: "*",
+                                        SearchOrder: Excel.XlSearchOrder.xlByRows,
+                                        SearchDirection: Excel.XlSearchDirection.xlPrevious,
+                                        MatchCase: false).Column;
 
-                //int lastRow = xlWorkSheet.Cells[excelRow, 1].End(Excel.XlDirection.xlUp).Row;
-
-                object misValue = Missing.Value;
-
-                int lastRow = 0;
-                Excel.Range count;
-                count = xlWorkSheet.UsedRange.Columns[1, misValue] as Excel.Range;
-                foreach (Excel.Range cell in count.Cells)
-                {
-                    lastRow += 1;
-                }
 
                 for (int i=4; i<=lastRow; i++) // Start index at 4th row
                 {
                     List<string> subData = new List<string>();
 
-                    for (int j=1; j<=excelCol; j++)
+                    for (int j=1; j<= lastCol; j++)
                     {
                         if (j == 17)    // Calculate startWorkDate
                         {
@@ -249,11 +243,17 @@ namespace excelTemplate
                     address2 = new string[] { "-", "-" };
                 }
 
-                string[] address3 = address2[1].Split(new[] { "ถนน" }, StringSplitOptions.None);        //ซอย, ถนน
+                string[] address3 = new string[2];
 
-                if (address3.Length == 1)
+                if (address2.Length != 1)
                 {
-                    Array.Resize(ref address3, 2);
+                    address3 = address2[1].Split(new[] { "ถนน" }, StringSplitOptions.None);        //ซอย, ถนน
+                }
+
+                else
+                {
+                    //Array.Resize(ref address3, 2);
+                    address3[0] = "-";
                     address3[1] = "-";
                 }
 
@@ -384,11 +384,17 @@ namespace excelTemplate
                         address2 = new string[] { "-", "-" };
                     }
 
-                    string[] address3 = address2[1].Split(new[] { "ถนน" }, StringSplitOptions.None);        //ซอย, ถนน
+                    string[] address3 = new string[2];
 
-                    if (address3.Length == 1)
+                    if (address2.Length != 1)
                     {
-                        Array.Resize(ref address3, 2);
+                        address3 = address2[1].Split(new[] { "ถนน" }, StringSplitOptions.None);        //ซอย, ถนน
+                    }
+
+                    else
+                    {
+                        //Array.Resize(ref address3, 2);
+                        address3[0] = "-";
                         address3[1] = "-";
                     }
 
@@ -418,9 +424,9 @@ namespace excelTemplate
                     document.ReplaceText("witness2", excelData[i][25].ToString());
                     document.ReplaceText("wit2Sign", excelData[i][26].ToString());
 
-                    System.IO.Directory.CreateDirectory(folderPath + "\\" + "สัญญา " + DateTime.Now.ToShortDateString());
+                    System.IO.Directory.CreateDirectory(folderPath + "\\" + "สัญญา " + DateTime.Now.Day + "-" + DateTime.Now.Month + "-" + DateTime.Now.Year);
 
-                    string saveFileName = folderPath + "\\" + "สัญญา " + DateTime.Now.ToShortDateString() + "\\" + excelData[i][1].ToString() + " " + excelData[i][4].ToString() + ".docx";
+                    string saveFileName = folderPath + "\\" + "สัญญา " + DateTime.Now.Day + "-" + DateTime.Now.Month + "-" + DateTime.Now.Year + "\\" + excelData[i][1].ToString() + " " + excelData[i][4].ToString() + ".docx";
 
                     document.SaveAs(saveFileName);
 
