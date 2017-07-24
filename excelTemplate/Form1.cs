@@ -67,11 +67,9 @@ namespace excelTemplate
 
                     for (int j=1; j<=excelCol; j++)
                     {
-                        if (j == 17)
+                        if (j == 17)    // Calculate startWorkDate
                         {
                             DateTime dateTime = Convert.ToDateTime(xlWorkSheet.Cells[i, j].Value2);
-
-                            //double date = double.Parse(dateTime);
 
                             var conv = dateTime.ToString("d MMMM yyyy", ThaiCulture);
 
@@ -95,9 +93,8 @@ namespace excelTemplate
                 Marshal.ReleaseComObject(xlWorkBook);
                 Marshal.ReleaseComObject(xlApp);
 
-                if(tbBrowseTemplate.Text != "")
+                if(tbBrowseTemplate.Text != "")     // Template already import
                 {
-                    //resultPanel.Enabled = true;
                     btSearchID.Enabled = true;
                     btAllContact.Enabled = true;
                 }
@@ -115,7 +112,7 @@ namespace excelTemplate
             {
                 if(excelData[i][1].ToString() == tbSearchID.Text)
                 {
-                    searchIndex = i;
+                    searchIndex = i;    // RegisID is match
                     break;
                 }
             }
@@ -288,9 +285,7 @@ namespace excelTemplate
 
                 document.SaveAs(browseContact.FileName);
 
-                MessageBox.Show("สร้างสัญญาเสร็จเรียบร้อย");
-
-                
+                MessageBox.Show("สร้างสัญญาเสร็จเรียบร้อย");              
             }            
 
         }
@@ -306,9 +301,8 @@ namespace excelTemplate
             {
                 tbBrowseTemplate.Text = browseTemplate.FileName.ToString();
 
-                if(tbBrowseExcel.Text != "")
+                if(tbBrowseExcel.Text != "")    // Excel contact already import
                 {
-                    //resultPanel.Enabled = true;
                     btSearchID.Enabled = true;
                     btAllContact.Enabled = true;
                 }
