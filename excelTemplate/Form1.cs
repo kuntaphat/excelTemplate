@@ -50,7 +50,7 @@ namespace excelTemplate
 
                 var lastCol = xlWorkSheet.Cells.Find(
                                         What: "*",
-                                        SearchOrder: Excel.XlSearchOrder.xlByRows,
+                                        SearchOrder: Excel.XlSearchOrder.xlByColumns,
                                         SearchDirection: Excel.XlSearchDirection.xlPrevious,
                                         MatchCase: false).Column;
 
@@ -365,7 +365,7 @@ namespace excelTemplate
 
                     document.ReplaceText("emAge", age.ToString());
 
-                    string[] address1 = excelData[i][7].ToString().Split(new[] { "หมู่" }, StringSplitOptions.None);     //บ้านเลขที่
+                    string[] address1 = excelData[i][7].ToString().Split(new[] { "หมู่ที่" }, StringSplitOptions.None);     //บ้านเลขที่
 
                     if(address1.Length == 1)
                     {
